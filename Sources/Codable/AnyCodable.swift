@@ -74,12 +74,21 @@ public struct AnyCodable: Encodable, Decodable {
 
 }
 
+/**
+ Having AnyCodable conforming to the Expressible methods means users can
+ create a dictionary or array that looks like a normal one
+ */
 extension AnyCodable:
     ExpressibleByStringLiteral,
     ExpressibleByIntegerLiteral,
     ExpressibleByBooleanLiteral,
-    ExpressibleByFloatLiteral
+    ExpressibleByFloatLiteral,
+    ExpressibleByArrayLiteral
 {
+
+    public init(arrayLiteral elements: AnyCodable...) {
+        self.init(CodableArray<AnyCodable>(elements))
+    }
 
     public init(stringLiteral value: String) {
         self.init(value)

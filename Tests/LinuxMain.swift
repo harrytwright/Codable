@@ -2,5 +2,5 @@ import XCTest
 @testable import CodableTests
 
 XCTMain([
-    testCase(CodableTests.allTests),
+    testCase(CodableArrayTests.allTests),
 ])
