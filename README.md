@@ -2,12 +2,9 @@
 
 Codable is a selection of code snippets to allow Dictionary and Array to work better with Swift 4's Codable
 
-- [Limitations With Swift.Codable](#limitations-with-swift.codable)
+- [Limitations With Swift.Codable](#limitations-with-swiftcodable)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Usage](#usage)
-  - [Basic Database Methods](#basic-database-methods)
-  - [Custom Database Configuration](#custom-database-configuration)
 
 ## Limitations With Swift.Codable
 
