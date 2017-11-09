@@ -1,5 +1,5 @@
 import XCTest
-@testable import Codable
+@testable import CodableCollection
 
 enum Key: String, CodingKey {
     case name
@@ -63,3 +63,4 @@ class CodableArrayTests: BaseTestCase {
         ("testAnyCodableProducesValidJSON", testThatAnyCodableExpressibleArrayProducesValidJSON)
     ]
 }
+
