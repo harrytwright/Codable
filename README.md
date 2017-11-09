@@ -1,4 +1,4 @@
-# Codable
+# CodableCollection
 
 Codable is a selection of code snippets to allow Dictionary and Array to work better with Swift 4's Codable
 
@@ -20,7 +20,7 @@ struct User: Codable {
 
 You will be hit with _"cannot automatically synthesize 'Decodable' because '[String : Any]' does not conform to 'Decodable'"_, this is because the complier cannot know what the `Any` object will be, it could be something that does not conform to `Codable`.
 
-With Codable all you need to do is:
+With CodableCollection all you need to do is:
 
 ```swift
 enum MetadataKeys: String, CodingKey {
@@ -81,6 +81,6 @@ Once you have your Swift package set up, adding Codable as a dependency is as ea
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/harrytwright/Codable.git", from: "1.0.0")
+    .package(url: "https://github.com/harrytwright/CodableCollection.git", from: "0.2.0")
 ]
 ```
