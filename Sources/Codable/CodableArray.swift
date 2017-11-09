@@ -23,14 +23,32 @@ public struct CodableArray<V: Codable> {
 
     /// <#Description#>
     public init() {
-        self._base = []
+        self = []
     }
 
     /// <#Description#>
     ///
     /// - Parameter base: <#base description#>
     public init(_ base: Array<V>) {
-        self._base = base
+        self = base.toCodable()
+    }
+
+    /// <#Description#>
+    ///
+    /// - Parameter sequence: <#base description#>
+    public init<S: Sequence>(_ sequence: S) where S.Element == V {
+        self = Array<V>(sequence).toCodable()
+    }
+
+    /// <#Description#>
+    ///
+    /// - Warning:  We filter the array to remove all non Codable elements
+    ///             but somtimes the this doesn't work for certain Objects.
+    /// - Parameter cocoa: An NSArray of objects
+    public init(_ cocoa: NSArray) {
+        // Can use `as!` because the prior filter will make sure all
+        // remaining Elements conform to Codable
+        self._base = (cocoa as! Array<Any>).filter { $0 is Codable } as! Array<V>
     }
 
     /// <#Description#>
@@ -80,7 +98,7 @@ extension CodableArray: Collection {
         return self._base[position]
     }
 
-    public func makeIterator() -> IndexingIterator<Array<V>> {
+    public func makeIterator() -> Iterator {
         return self._base.makeIterator()
     }
 

@@ -113,6 +113,34 @@ extension AnyCodable: CustomStringConvertible {
     public var description: String {
         return "AnyCodable(\(self.base))"
     }
+
+}
+
+extension AnyCodable: Hashable {
+
+    public static func ==(lhs: AnyCodable, rhs: AnyCodable) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+
+    public var hashValue: Int {
+        if let hash = try? JSONEncoder().encode(self).hashValue {
+            return hash
+        } else if self.base is Int {
+            return (self.base as! Int).hashValue
+        } else if self.base is Double {
+            return (self.base as! Double).hashValue
+        } else if self.base is Float {
+            return (self.base as! Float).hashValue
+        } else if self.base is Bool {
+            return (self.base as! Bool).hashValue
+        } else if self.base is String {
+            return (self.base as! String).hashValue
+        }
+
+        return 1 ^ 5
+    }
+
+
 }
 
 extension AnyCodable: CustomReflectable {
