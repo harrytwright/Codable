@@ -84,6 +84,22 @@ extension CodableArray: ExpressibleByArrayLiteral, Encodable, Decodable {
     
 }
 
+extension CodableArray: RangeReplaceableCollection {
+
+    public mutating func append(_ newElement: V) {
+        self._base.append(newElement)
+    }
+
+    public mutating func append<S>(contentsOf newElements: S) where S : Sequence, V == S.Element {
+        self.append(contentsOf: newElements)
+    }
+
+    public mutating func remove(at position: Array<V>.Index) -> V {
+        return self._base.remove(at: position)
+    }
+
+}
+
 extension CodableArray: Collection {
 
     public typealias Index = Array<V>.Index

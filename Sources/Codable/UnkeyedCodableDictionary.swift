@@ -59,7 +59,7 @@ public struct UnkeyedKeys: CodingKey, Hashable {
 ///     print(error) // Never gets called
 /// }
 /// ```
-public struct UnkeyedCodableDictionary<Value: Codable>: Codable {
+public struct UnkeyedCodableDictionary<Value: Codable>: Decodable, Encodable {
 
     public typealias Key = String
 
@@ -96,7 +96,9 @@ public struct UnkeyedCodableDictionary<Value: Codable>: Codable {
         self.init(dictionary)
     }
 
-
+    public func encode(to encoder: Encoder) throws {
+        try _base.encode(to: encoder)
+    }
 
 }
 

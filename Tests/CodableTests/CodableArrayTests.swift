@@ -9,6 +9,10 @@ struct User: Codable {
     var name: String
 }
 
+struct Users: Codable {
+    var users: UnkeyedCodableDictionary<User>
+}
+
 class CodableArrayTests: BaseTestCase {
 
     func testThatAnyCodableExpressibleArrayEncodes() {
@@ -37,6 +41,20 @@ class CodableArrayTests: BaseTestCase {
             }
 
             XCTAssertEqual(string, json)
+
+
+        }
+    }
+
+    func test() {
+        run {
+            let aUser = User(name: "Harry")
+            let users = Users(users: ["qwertyuiop":aUser])
+
+            let encodedData = try encoder.encode(users)
+            let string = String(data: encodedData, encoding: .utf8)!
+            print(string)
+
         }
     }
 
