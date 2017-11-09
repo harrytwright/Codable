@@ -1,21 +1,22 @@
-//
-//  AnyCodable.swift
-//  Codable
-//
-//  Created by Harry Wright on 08.11.17.
-//
-
 import Foundation
+
+protocol Nestable: Codable { }
 
 internal protocol _AnyCodableBox {
 
     var _base: Any { get }
+
+    var objectIdentifier: ObjectIdentifier { get }
 
 }
 
 internal struct _ConcreteCodableBox<Base : Codable> : _AnyCodableBox {
 
     internal var _baseCodable: Base
+
+    var objectIdentifier: ObjectIdentifier {
+        return ObjectIdentifier(type(of: _baseCodable))
+    }
 
     init(_ base: Base) {
         self._baseCodable = base
@@ -26,26 +27,24 @@ internal struct _ConcreteCodableBox<Base : Codable> : _AnyCodableBox {
     }
 }
 
-/// <#Description#>
 public struct AnyCodable: Encodable, Decodable {
 
     internal var _box: _AnyCodableBox
 
-    /// <#Description#>
     public var base: Any {
         return _box._base
     }
 
-    /// <#Description#>
-    ///
-    /// - Parameter base: <#base description#>
+    public var objectIdentifier: ObjectIdentifier {
+        return _box.objectIdentifier
+    }
+
     public init<Base: Codable>(_ base: Base) {
         self._box = _ConcreteCodableBox<Base>(base)
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-
         if let intValue = try? container.decode(Int.self) {
             self._box = _ConcreteCodableBox<Int>(intValue)
         } else if let doubleValue = try? container.decode(Double.self) {
@@ -54,15 +53,14 @@ public struct AnyCodable: Encodable, Decodable {
             self._box = _ConcreteCodableBox<Float>(floatValue)
         } else if let stringValue = try? container.decode(String.self) {
             self._box = _ConcreteCodableBox<String>(stringValue)
-        } else if let boolValue = try? container.decode(Bool.self) {
-            self._box = _ConcreteCodableBox<Bool>(boolValue)
+        } else if let dictionaryValue = try? container.decode([String:AnyCodable].self) {
+            self._box = _ConcreteCodableBox<[String:AnyCodable]>(dictionaryValue)
+        } else if let arrayValue = try? container.decode([AnyCodable].self) {
+            self._box = _ConcreteCodableBox<[AnyCodable]>(arrayValue)
         } else {
             throw DecodingError.typeMismatch(
                 type(of: self),
-                .init(codingPath:
-                    decoder.codingPath,
-                      debugDescription: "Unsupported JSON type"
-                )
+                .init(codingPath: decoder.codingPath, debugDescription: "Unsupported JSON type")
             )
         }
     }
@@ -108,14 +106,6 @@ extension AnyCodable:
 
 }
 
-extension AnyCodable: CustomStringConvertible {
-
-    public var description: String {
-        return "AnyCodable(\(self.base))"
-    }
-
-}
-
 extension AnyCodable: Hashable {
 
     public static func ==(lhs: AnyCodable, rhs: AnyCodable) -> Bool {
@@ -143,6 +133,14 @@ extension AnyCodable: Hashable {
 
 }
 
+
+extension AnyCodable: CustomStringConvertible {
+
+    public var description: String {
+        return "AnyCodable(\(self.base))"
+    }
+}
+
 extension AnyCodable: CustomReflectable {
 
     public var customMirror: Mirror {
@@ -153,5 +151,5 @@ extension AnyCodable: CustomReflectable {
             ]
         )
     }
-
+    
 }

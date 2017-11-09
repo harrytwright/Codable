@@ -6,7 +6,7 @@ enum Key: String, CodingKey {
 }
 
 struct User: Codable {
-    var name: AnyCodable
+    var name: String
 }
 
 class CodableArrayTests: BaseTestCase {

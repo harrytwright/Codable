@@ -30,14 +30,14 @@ public struct CodableArray<V: Codable> {
     ///
     /// - Parameter base: <#base description#>
     public init(_ base: Array<V>) {
-        self = base.toCodable()
+        self._base = base
     }
 
     /// <#Description#>
     ///
     /// - Parameter sequence: <#base description#>
     public init<S: Sequence>(_ sequence: S) where S.Element == V {
-        self = Array<V>(sequence).toCodable()
+        self._base = Array<V>(sequence)
     }
 
     /// <#Description#>
