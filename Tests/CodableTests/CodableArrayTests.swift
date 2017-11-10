@@ -13,6 +13,15 @@ struct Users: Codable {
     var users: UnkeyedCodableDictionary<User>
 }
 
+struct Event: Codable {
+    var name: String
+}
+
+struct EventList: Codable {
+    var _id: String
+    var list: CodableArray<Event>
+}
+
 class CodableArrayTests: BaseTestCase {
 
     func testThatAnyCodableExpressibleArrayEncodes() {
@@ -55,6 +64,15 @@ class CodableArrayTests: BaseTestCase {
             let string = String(data: encodedData, encoding: .utf8)!
             print(string)
 
+        }
+    }
+
+    func testNew() {
+        run {
+            let anEvent = Event(name: "addedItemToBasket")
+            let events = EventList(_id: "addedItemToBasket", list: [])
+
+            addChanges(anEvent, in: events, forKeyPath: \EventList.list)
         }
     }
 

@@ -115,12 +115,17 @@ extension UnkeyedCodableDictionary: ExpressibleByDictionaryLiteral {
 
 }
 
-extension UnkeyedCodableDictionary {
+extension UnkeyedCodableDictionary: MutableHashCollection {
 
     public subscript(position: Dictionary<UnkeyedCodableDictionary.Key, Value>.Index) -> (key: UnkeyedCodableDictionary.Key, value: Value) {
         get {
             return self.dictionary[position]
         }
+    }
+    
+    mutating func updateValue(_ value: Value, forKey key: String) -> Value? {
+        guard let key = UnkeyedKeys(stringValue: key) else { return nil }
+        return self._base.updateValue(value, forKey: key)
     }
 }
 

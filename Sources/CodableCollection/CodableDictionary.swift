@@ -7,6 +7,17 @@
 
 import Foundation
 
+protocol MutableHashCollection {
+    
+    associatedtype Key: Hashable
+    
+    associatedtype Value
+    
+    @discardableResult mutating func updateValue(_ value: Value, forKey key: Key) -> Value?
+}
+
+extension Dictionary: MutableHashCollection { }
+
 public enum CodableError: Error {
     case invalidCodingKey
 }
@@ -35,7 +46,7 @@ public struct CodableDictionary<K: Hashable, V: Codable> where K: CodingKey {
     }
 
     /// The base storage
-    private var _base: [Key: Value]
+    internal var _base: [Key: Value]
 
     /// Initaliser method to create an empty dictionary
     public init() {
@@ -128,7 +139,7 @@ extension CodableDictionary {
 
 }
 
-extension CodableDictionary {
+extension CodableDictionary: MutableHashCollection {
 
     /// The Index for the Collection
     public typealias Index = Dictionary<Key, Value>.Index

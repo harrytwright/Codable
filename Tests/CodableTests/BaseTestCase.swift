@@ -6,6 +6,19 @@
 //
 
 import XCTest
+import CodableCollection
+
+func addChanges<Change: Codable, Object: Codable, S: RangeReplaceableCollection>(
+    _ changes: Change,
+    in object: Object,
+    forKeyPath keyPath: WritableKeyPath<Object, S>,
+    callback: (() -> Void)? = nil
+    ) where S.Element == Change
+{
+    var newObject = object
+    newObject[keyPath: keyPath].append(changes)
+    print(newObject[keyPath: keyPath])
+}
 
 class BaseTestCase: XCTestCase {
 
