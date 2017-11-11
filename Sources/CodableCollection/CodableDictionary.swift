@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MutableHashCollection {
+public protocol MutableHashCollection {
     
     associatedtype Key: Hashable
     
