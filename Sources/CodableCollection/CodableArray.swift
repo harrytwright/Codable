@@ -13,13 +13,13 @@ extension Array where Element : Codable {
     }
 }
 
-public struct CodableArray<V: Codable> {
+public struct CodableArray<Element: Codable> {
 
-    public var array: Array<V> {
+    public var array: Array<Element> {
         return _base
     }
 
-    private var _base: Array<V>
+    private var _base: Array<Element>
 
     /// <#Description#>
     public init() {
@@ -29,15 +29,15 @@ public struct CodableArray<V: Codable> {
     /// <#Description#>
     ///
     /// - Parameter base: <#base description#>
-    public init(_ base: Array<V>) {
+    public init(_ base: Array<Element>) {
         self._base = base
     }
 
     /// <#Description#>
     ///
     /// - Parameter sequence: <#base description#>
-    public init<S: Sequence>(_ sequence: S) where S.Element == V {
-        self._base = Array<V>(sequence)
+    public init<S: Sequence>(_ sequence: S) where S.Element == Element {
+        self._base = Array<Element>(sequence)
     }
 
     /// <#Description#>
@@ -48,13 +48,13 @@ public struct CodableArray<V: Codable> {
     public init(_ cocoa: NSArray) {
         // Can use `as!` because the prior filter will make sure all
         // remaining Elements conform to Codable
-        self._base = (cocoa as! Array<Any>).filter { $0 is Codable } as! Array<V>
+        self._base = (cocoa as! Array<Any>).filter { $0 is Codable } as! Array<Element>
     }
 
     /// <#Description#>
     ///
     /// - Parameter codableArray: <#codableArray description#>
-    public init(_ codableArray: CodableArray<V>) {
+    public init(_ codableArray: CodableArray<Element>) {
         self = codableArray
     }
 
@@ -67,11 +67,11 @@ extension CodableArray: ExpressibleByArrayLiteral, Encodable, Decodable {
     }
 
     public init(from decoder: Decoder) throws {
-        var array: [V] = []
+        var array: [Element] = []
 
         var container = try decoder.unkeyedContainer()
         while !container.isAtEnd {
-            array.append(try container.decode(V.self))
+            array.append(try container.decode(Element.self))
         }
         
         self._base = array
@@ -86,31 +86,25 @@ extension CodableArray: ExpressibleByArrayLiteral, Encodable, Decodable {
 
 extension CodableArray: RangeReplaceableCollection {
 
-    public mutating func append(_ newElement: V) {
+    public mutating func append(_ newElement: Element) {
         self._base.append(newElement)
     }
 
-    public mutating func append<S>(contentsOf newElements: S) where S : Sequence, V == S.Element {
+    public mutating func append<S>(contentsOf newElements: S) where S : Sequence, Element == S.Element {
         self.append(contentsOf: newElements)
-    }
-
-    public mutating func remove(at position: Array<V>.Index) -> V {
-        return self._base.remove(at: position)
     }
 
 }
 
 extension CodableArray: Collection {
 
-    public typealias Index = Array<V>.Index
+    public typealias Index = Array<Element>.Index
 
-    public typealias Element = Array<V>.Element
+    public typealias SubSequence = Array<Element>.SubSequence
 
-    public typealias SubSequence = Array<V>.SubSequence
+    public typealias Iterator = Array<Element>.Iterator
 
-    public typealias Iterator = Array<V>.Iterator
-
-    public subscript(position: CodableArray.Index) -> V {
+    public subscript(position: CodableArray.Index) -> Element {
         return self._base[position]
     }
 
@@ -118,7 +112,7 @@ extension CodableArray: Collection {
         return self._base.makeIterator()
     }
 
-    public func index(after i: CodableArray<V>.Index) -> CodableArray<V>.Index {
+    public func index(after i: CodableArray<Element>.Index) -> CodableArray<Element>.Index {
         return self._base.index(after: i)
     }
 
@@ -128,6 +122,23 @@ extension CodableArray: Collection {
 
     public var endIndex: CodableArray.Index {
         return self._base.endIndex
+    }
+
+    public mutating func insert(_ newElement: Element, at i: CodableArray.Index) {
+        self._base.insert(newElement, at: i)
+    }
+
+    public func enumerated() -> EnumeratedSequence<Array<Element>> {
+        return self._base.enumerated()
+    }
+
+    @discardableResult
+    public mutating func remove(at position: Array<Element>.Index) -> Element {
+        return self._base.remove(at: position)
+    }
+
+    public func filter(_ isIncluded: @escaping (Element) throws -> Bool) rethrows -> [Element] {
+        return try self.filter(isIncluded)
     }
 
 }
