@@ -122,6 +122,10 @@ extension UnkeyedCodableDictionary: MutableHashCollection {
             return self.dictionary[position]
         }
     }
+
+    public subscript(key: Key) -> Value? {
+        return self.dictionary[key]
+    }
     
     public mutating func updateValue(_ value: Value, forKey key: String) -> Value? {
         guard let key = UnkeyedKeys(stringValue: key) else { return nil }
