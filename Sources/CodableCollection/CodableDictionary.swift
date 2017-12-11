@@ -18,6 +18,17 @@ public protocol MutableHashCollection {
 
 extension Dictionary: MutableHashCollection { }
 
+extension Dictionary where Key: CodingKey {
+    public func mapKeys<T: Hashable>(_ body: (Key) throws -> T) rethrows -> [T: Value] {
+        var newDict: Dictionary<T, Value> = [:]
+        for (key, value) in self {
+            newDict.updateValue(value, forKey: try body(key))
+        }
+        return newDict
+    }
+}
+
+
 public enum CodableError: Error {
     case invalidCodingKey
 }
@@ -38,11 +49,7 @@ public struct CodableDictionary<K: Hashable, V: Codable> where K: CodingKey {
 
     /// The Swift dictionary instance of the Codable Dictionay
     public var dictionary: [String: V] {
-        var dict: [String: V] = [:]
-        for (key, value) in self._base {
-            dict.updateValue(value, forKey: key.stringValue)
-        }
-        return dict
+        return  self._base.mapKeys { $0.stringValue }
     }
 
     /// The base storage

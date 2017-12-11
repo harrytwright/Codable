@@ -1,4 +1,4 @@
-public struct UnkeyedKeys: CodingKey, Hashable {
+public struct UnkeyedKeys: CodingKey, Hashable, CustomStringConvertible {
 
     public var stringValue: String
 
@@ -19,6 +19,10 @@ public struct UnkeyedKeys: CodingKey, Hashable {
 
     public static func ==(lhs: UnkeyedKeys, rhs: UnkeyedKeys) -> Bool {
         return lhs.hashValue == rhs.hashValue
+    }
+
+    public var description: String {
+        return stringValue
     }
 
 }

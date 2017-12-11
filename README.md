@@ -1,6 +1,6 @@
 # CodableCollection
 
-Codable is a selection of code snippets to allow Dictionary and Array to work better with Swift 4's Codable
+Codable is a selection of type-safe Collections to keep you safe.
 
 - [Limitations With Swift.Codable](#limitations-with-swiftcodable)
 - [Requirements](#requirements)
@@ -8,58 +8,49 @@ Codable is a selection of code snippets to allow Dictionary and Array to work be
 
 ## Limitations With Swift.Codable
 
-Let say your `Codable` struct or class looks like this:
+Let say you're an Analytics SDK platform, and you have a `userInfo` parameter where you don't know the keys and objects to be entered as a end developer enters them, so your `Struct` will look like this:
 
 ```swift
-struct User: Codable {
+struct Event: Codable {
     var name: String
-    var email: String
-    var metadata: [String: Any]
+    var userInfo: [String: Any]
 }
 ```
 
-You will be hit with _"cannot automatically synthesize 'Decodable' because '[String : Any]' does not conform to 'Decodable'"_, this is because the complier cannot know what the `Any` object will be, it could be something that does not conform to `Codable`.
+However, you will be hit with _"cannot automatically synthesize 'Decodable' because '[String : Any]' does not conform to 'Decodable'"_, this is because the complier cannot know what the `Any` object will be, it could be something that does not conform to `Codable`.
 
 With CodableCollection all you need to do is:
 
 ```swift
-enum MetadataKeys: String, CodingKey {
-    case timestamp
-    case locale
-}
 
-struct User: Codable {
+struct Event: Codable {
     var name: String
-    var email: String
-    var metadata: CodableDictionary<MetadataKeys, AnyCodable>
+    var userInfo: UnkeyedCodableDictionary<AnyCodable>
 }
 ```
 
-Compiling this and passing JSON through works
+Mocking up with an event will produce:
 
 ```swift
-let data = """
-{
-  "name":"harry",
-  "email":"harry@email.com",
-  "metadata": {
-    "timestamp": \(Date().timeIntervalSince1970)
-  }
-}
-""".data(using: .utf8)!
+AnalyticsSDK.logEvent("SignUp", userInfo: ["user":"qwertyuiop", "email":"abc@xyz.com"])
 
-let aUser = try! JSONDecoder().decode(User.self, from: data)
-
-dump(aUser)
-// ▿ __lldb_expr_18.User
-// - name: "harry"
-// - email: "harry@email.com"
-// ▿ metadata: ["timestamp": AnyCodable(1510158557.90589)]
-//   ▿ _dictionary: 1 key/value pair
-//     ▿ (2 elements)
-//       - key: __lldb_expr_18.MetadataKeys.timestamp
-//       ▿ value: AnyCodable(1510158557.90589)
-//         - value: 1510158557.90589
+// ▿ __lldb_expr_7.Event
+//   - name: "SignUp"
+//   ▿ userInfo: ["user": AnyCodable(qwertyuiop), "email": AnyCodable(abc@xyz.com)]
+//     ▿ _base: ["user": AnyCodable(qwertyuiop), "email": AnyCodable(abc@xyz.com)]
+//       ▿ _base: 2 key/value pairs
+//         ▿ (2 elements)
+//           ▿ key: user
+//             - stringValue: "user"
+//             - intValue: nil
+//           ▿ value: AnyCodable(qwertyuiop)
+//             - value: "qwertyuiop"
+//         ▿ (2 elements)
+//           ▿ key: email
+//             - stringValue: "email"
+//             - intValue: nil
+//           ▿ value: AnyCodable(abc@xyz.com)
+//             - value: "abc@xyz.com"
 ```
 
 ## Requirements
@@ -81,6 +72,6 @@ Once you have your Swift package set up, adding Codable as a dependency is as ea
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/harrytwright/CodableCollection.git", from: "0.2.0")
+    .package(url: "https://github.com/harrytwright/CodableCollection.git", from: "0.3.0")
 ]
 ```
